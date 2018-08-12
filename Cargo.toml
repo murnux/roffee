@@ -1,0 +1,11 @@
+[package]
+name = "roffee"
+version = "0.1.0"
+authors = ["murnux <liammurphy@fastmail.com>"]
+
+[dependencies]
+libsqlite3-sys = "0.9.1"
+
+[dependencies.rusqlite]
+version = "0.13.0"
+features = ["bundled"]
