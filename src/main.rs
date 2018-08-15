@@ -8,6 +8,7 @@ use std::env;
 use std::fs::File;
 use std::string::String;
 
+// Struct to store data from db about a store item
 #[derive(Debug)]
 struct Item {
     id: i32,
@@ -53,11 +54,21 @@ fn create_db(path: &str) {
                   )", &[]).unwrap();
 }
 
-fn insert_item(path: &str) {
-    let mut input = String::new();
+fn delete_item(path: &str) {
     let stdin = io::stdin();
-    stdin.lock().read_line(&mut input).unwrap();
+    let mut item_name = String::new();
+    println!("Name of item to delete: ");
+    stdin.lock().read_line(&mut item_name).unwrap();
 
+    let conn = Connection::open(path).unwrap();
+    conn.execute("DELETE FROM Items WHERE name = ?", &[&item_name]).unwrap();
+
+    println!("{} has been deleted.", &item_name);
+}
+
+// Perhaps the worst function I have ever written.
+fn insert_item(path: &str) {
+    let stdin = io::stdin();
     let mut name = String::new();
     println!("Name: ");
     stdin.lock().read_line(&mut name).unwrap();
@@ -103,11 +114,12 @@ fn main() {
         let stdin = io::stdin();
         stdin.lock().read_line(&mut input).unwrap();
         println!("Input: {}", input);
-        // This if is really gross, as in it fundamentally hurts my soul. Better solution would be awesome
         if input.contains("!new") {
             insert_item(db_path);
         } else if input.contains("!list") {
             print_items(db_path);
+        } else if input.contains("!del") {
+            delete_item(db_path);
         }
     }
 }
